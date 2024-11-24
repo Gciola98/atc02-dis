@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+  main_app:
+    build: ./main_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./main_app/logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  pdf2txt:
+    build: ./pdf2txt
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./pdf2txt/logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  reduce_resolution:
+    build: ./reduce_resolution
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./pdf2txt/logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  resize_images:
+    build: ./resize_images
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./resize_images/logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  convert_images:
+    build: ./convert_images
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./convert_images/logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  logs: 
