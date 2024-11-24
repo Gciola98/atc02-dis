@@ -1,58 +1,63 @@
-version: "3.9"
+version: '3.8'
+
 services:
   main_app:
     build: ./main_app
     ports:
       - "5000:5000"
     volumes:
-      - ./main_app/logs:/app/logs
+      - ./logs:/var/log/conversion_services
+    depends_on:
+      - pdf2txt
+      - reduce_resolution
+      - resize_images
+      - convert_images
     networks:
-      - app-network
-    restart: unless-stopped
+      - conversion_network
 
   pdf2txt:
     build: ./pdf2txt
-    ports:
-      - "5001:5001"
     volumes:
-      - ./pdf2txt/logs:/app/logs
+      - ./logs:/var/log/conversion_services
+      - /tmp/conversions:/tmp/conversions
+    expose:
+      - "5001"
     networks:
-      - app-network
-    restart: unless-stopped
+      - conversion_network
 
   reduce_resolution:
     build: ./reduce_resolution
-    ports:
-      - "5002:5002"
     volumes:
-      - ./pdf2txt/logs:/app/logs
+      - ./logs:/var/log/conversion_services
+      - /tmp/conversions:/tmp/conversions
+    expose:
+      - "5002"
     networks:
-      - app-network
-    restart: unless-stopped
+      - conversion_network
 
   resize_images:
     build: ./resize_images
-    ports:
-      - "5003:5003"
     volumes:
-      - ./resize_images/logs:/app/logs
+      - ./logs:/var/log/conversion_services
+      - /tmp/conversions:/tmp/conversions
+    expose:
+      - "5003"
     networks:
-      - app-network
-    restart: unless-stopped
+      - conversion_network
 
   convert_images:
     build: ./convert_images
-    ports:
-      - "5004:5004"
     volumes:
-      - ./convert_images/logs:/app/logs
+      - ./logs:/var/log/conversion_services
+      - /tmp/conversions:/tmp/conversions
+    expose:
+      - "5004"
     networks:
-      - app-network
-    restart: unless-stopped
+      - conversion_network
 
 networks:
-  app-network:
+  conversion_network:
     driver: bridge
 
 volumes:
-  logs: 
+  logs:
